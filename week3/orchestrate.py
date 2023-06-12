@@ -11,6 +11,7 @@ import xgboost as xgb
 from prefect import flow, task
 from prefect.artifacts import create_markdown_artifact
 from datetime import date
+from prefect_email import EmailServerCredentials, email_send_message
 
 
 @task(retries=3, retry_delay_seconds=2, name="Read taxi data")
@@ -128,6 +129,18 @@ def train_best_model(
     return None
 
 
+@task
+def example_email_send_message_flow():
+    email_server_credentials = EmailServerCredentials.load("emailtest")
+    subject = email_send_message(
+        email_server_credentials=email_server_credentials,
+        subject="Example Flow Notification using Gmail",
+        msg="This proves email_send_message works!",
+        email_to="timbecker59@gmail.com",
+    )
+    return subject
+
+
 @flow
 def main_flow(
     train_path: str = "./../data/green_tripdata_2023-02.parquet",
@@ -148,6 +161,8 @@ def main_flow(
 
     # Train
     train_best_model(X_train, X_val, y_train, y_val, dv)
+
+    example_email_send_message_flow()
 
 
 if __name__ == "__main__":
