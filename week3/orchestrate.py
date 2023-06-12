@@ -129,8 +129,8 @@ def train_best_model(
     return None
 
 
-@task
-def example_email_send_message_flow():
+@flow
+def example_email_send_message():
     email_server_credentials = EmailServerCredentials.load("emailtest")
     subject = email_send_message(
         email_server_credentials=email_server_credentials,
@@ -162,7 +162,7 @@ def main_flow(
     # Train
     train_best_model(X_train, X_val, y_train, y_val, dv)
 
-    example_email_send_message_flow()
+    example_email_send_message()
 
 
 if __name__ == "__main__":
